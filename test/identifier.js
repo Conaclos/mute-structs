@@ -57,13 +57,18 @@ test("compare-to-base", (t) => {
 
 test("hasPlaceAfter-same-base", (t) => {
     const id1 = new Identifier([], 0)
-    const id2 = new Identifier([], 1)
+    const id2 = new Identifier([], 2)
 
     t.true(id1.hasPlaceAfter(id2, 1))
     t.false(id1.hasPlaceAfter(id2, 2))
+})
 
-    t.false(id1.hasPlaceAfter(id1, 1))
-    t.false(id2.hasPlaceAfter(id1, 1))
+test("hasPlaceAfter-different-base", (t) => {
+  const id1 = new Identifier([0, 0, 0], 2)
+  const id2 = new Identifier([0, 0, 0, 3, 0, 0, 1], 5)
+
+  t.true(id1.hasPlaceAfter(id2, 1))
+  t.false(id1.hasPlaceAfter(id2, 2))
 })
 
 test("hasPlaceBefore-same-base", (t) => {

@@ -113,9 +113,17 @@ export class Identifier {
         return "Id[" + this.base.concat(this.last).join(", ") + ']'
     }
 
+    /**
+     * Check if you can append several characters to this identifier without overflowing on the next one
+     *
+     * @param {Identifier} next The next identifier
+     * @param {number} length The number of characters we want to add
+     * @returns {boolean}
+     **/
     hasPlaceAfter (next: Identifier, length: number): boolean {
         console.assert(next instanceof Identifier, "next = ", next)
         console.assert(typeof length === "number", "length = ", length)
+        console.assert(this.compareTo(next) === -1, "this must be smaller than next")
 
         const base = this.base
 
@@ -135,15 +143,26 @@ export class Identifier {
             return true
           } else {
             const max = length + this.last
+            if (base.length === next.base.length) {
+              return nextExtended[i] > max
+            }
             return nextExtended[i] >= max
           }
         }
     }
 
+    /**
+     * Check if you can prepend several characters to this identifier without overflowing on the previous one
+     *
+     * @param {Identifier} prev The previous identifier
+     * @param {number} length The number of characters we want to add
+     * @returns {boolean}
+     **/
     hasPlaceBefore (prev: Identifier, length: number): boolean {
-        console.assert(prev instanceof Identifier, "prv = ", prev)
+        console.assert(prev instanceof Identifier, "prev = ", prev)
         console.assert(typeof length === "number" && Number.isInteger(length),
             "length = ", length)
+        console.assert(this.compareTo(prev) === 1, "this must be greater than prev")
 
         const base = this.base
 
