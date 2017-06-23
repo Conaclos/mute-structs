@@ -231,6 +231,28 @@ export class LogootSRopes {
 
                         this.ascendentUpdate(path, l.length)
 
+                        // Get next node
+                        let prev: RopesNodes | null = null
+
+                        if (from.left !== null) {
+                          prev = this.getXest(rightChildOf, [from.left])
+                        }
+                        if (prev instanceof RopesNodes) {
+                          const currentId: Identifier = from.getIdBegin()
+                          const prevId: Identifier = prev.getIdEnd()
+                          if (currentId.equalsBase(prevId) && !currentId.hasPlaceBefore(prevId, 1)) {
+                            // The two identifiers are contiguous, can merge the block
+
+                            // Need to retrieve the string corresponding to prev
+                            // Since the model string has not been updated yet
+                            // The string position is at index from.leftSubtreeSize() - prev.length
+                            const prevStr = this.str.substr(from.leftSubtreeSize() - prev.length, prev.length)
+                            const prevIdi = prev.getIdentifierInterval()
+                            this.delBlockRec(prevIdi)
+                            this.addBlockFromRec(prevStr, prevIdi, from, 0)
+                          }
+                        }
+
                         // check if previous is smaller or not
                         if ((split - 1) >= idi.begin) {
                             str = str.substr(0, split - idi.begin)
@@ -259,6 +281,28 @@ export class LogootSRopes {
                         result.push(new TextInsert(i, l))
 
                         this.ascendentUpdate(path, l.length)
+
+                        // Get next node
+                        let next: RopesNodes | null = null
+
+                        if (from.right !== null) {
+                          next = this.getXest(leftChildOf, [from.right])
+                        }
+                        if (next instanceof RopesNodes) {
+                          const currentId: Identifier = from.getIdEnd()
+                          const nextId: Identifier = next.getIdBegin()
+                          if (currentId.equalsBase(nextId) && !currentId.hasPlaceAfter(nextId, 1)) {
+                            // The two identifiers are contiguous, can merge the block
+
+                            // Need to retrieve the string corresponding to next
+                            // Since the model string has not been updated yet
+                            // The string position is at index i
+                            const nextStr = this.str.substr(i, next.length)
+                            const nextIdi = next.getIdentifierInterval()
+                            this.delBlockRec(nextIdi)
+                            this.addBlockFromRec(nextStr, nextIdi, from, 0)
+                          }
+                        }
 
                         if (idi.end >= (split + 1)) {
                             str = str.substr(split + 1 - idi.begin, str.length)
@@ -494,6 +538,18 @@ export class LogootSRopes {
     delBlock (id: IdentifierInterval): TextDelete[] {
         console.assert(id instanceof IdentifierInterval, "id = ", id)
 
+        const l: TextDelete[] = this.delBlockRec(id)
+
+        l.forEach((textDelete: TextDelete) => {
+          this.applyTextDelete(textDelete)
+        })
+
+        return l
+    }
+
+    delBlockRec (id: IdentifierInterval): TextDelete[] {
+        console.assert(id instanceof IdentifierInterval, "id = ", id)
+
         let l: TextDelete[] = []
         let i
         while (true) {
@@ -535,11 +591,6 @@ export class LogootSRopes {
                 }
             }
         }
-
-        l.forEach((textDelete: TextDelete) => {
-          this.applyTextDelete(textDelete)
-        })
-
         return l
     }
 

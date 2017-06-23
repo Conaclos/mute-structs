@@ -187,11 +187,13 @@ test("commutative-insert-append", (t) => {
     t.is(docA.digest(), docB.digest(), "docA.digest() = docB.digest()")
 })
 
-test.failing("commutative-append1-append2", (t) => {
+test("commutative-append1-append2", (t) => {
     const replicaNumberA = 1
     const docA = new LogootSRopes(replicaNumberA)
     const replicaNumberB = 2
     const docB = new LogootSRopes(replicaNumberB)
+    const replicaNumberC = 3
+    const docC = new LogootSRopes(replicaNumberC)
 
     const insertOp = docA.insertLocal(0, "hello world")
     const appendOp1 = docA.insertLocal(11, "1")
@@ -203,6 +205,13 @@ test.failing("commutative-append1-append2", (t) => {
 
     t.is(docA.str, docB.str, "docA.str = docB.str")
     t.is(docA.digest(), docB.digest(), "docA.digest() = docB.digest()")
+
+    appendOp2.execute(docC)
+    insertOp.execute(docC)
+    appendOp1.execute(docC)
+
+    t.is(docA.str, docC.str, "docA.str = docC.str")
+    t.is(docA.digest(), docC.digest(), "docA.digest() = docC.digest()")
 })
 
 test("commutative-insert-append-split-1", (t) => {
