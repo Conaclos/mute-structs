@@ -73,13 +73,8 @@ test("hasPlaceAfter-different-base", (t) => {
 
 test("hasPlaceBefore-same-base", (t) => {
     const id1 = new Identifier([], 0)
-    const id2 = new Identifier([], 1)
-    const id3 = new Identifier([], 2)
+    const id2 = new Identifier([], 2)
 
-    t.true(id3.hasPlaceBefore(id1, 1))
-    t.false(id3.hasPlaceBefore(id1, 2))
-
-    t.false(id1.hasPlaceBefore(id1, 1))
-    t.false(id2.hasPlaceBefore(id1, 1))
+    t.true(id2.hasPlaceBefore(id1, 1))
+    t.false(id2.hasPlaceBefore(id1, 2))
 })
-
